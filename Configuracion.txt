@@ -1,0 +1,21 @@
+1.- Copiar y pegar en C:\Users\xxxx\Documents\Arduino\libraries
+las librerias dentro de TFT_eSPI Lib del sitio:
+https://www.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28#Resource
+
+	SI NO FUNCIONA SE PUEDE COMENTAR LA LINEA:
+		#include <User_Setup.h> 
+		de C:\Users\xxxx\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h
+	Y AGREGAR HASTA EL FINAL DEL DOCUMENTO 
+		#define USE_HSPI_PORT
+		de C:\Users\PRIDE OTTER\Documents\Arduino\libraries\TFT_eSPI_Setups\Setup207_GC9A01.h
+
+2.- Instalar la version 2.0.12 de ESP32
+	NO FUNCIONA CON VERSIONES MAS NUEVAS
+
+3.- Seleccionar en arduino IDE
+	placa: ESP32S3 Dev Module
+	Tools > Flash Size > "16MB (128Mb)"
+	Tools > PSRAM > "QSPI PSRAM"
+
+4.- Probar con algun ejemplo de:
+	File > Examples > TFT_eSPI > Test and diagnostics
