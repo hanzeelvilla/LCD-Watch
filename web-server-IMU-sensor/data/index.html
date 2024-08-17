@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>IMU Data</title>
+</head>
+<body>
+    <h1>IMU Data</h1>
+    <p id='accel'>Accelerometer: Loading...</p>
+    <p id='gyro'>Gyroscope: Loading...</p>
+    <p id="time">Time: Loading...</p>
+    <p id="temp">Temp: Loading...</p>
+
+    <script>
+        const ws = new WebSocket(`ws://${window.location.hostname}/ws`); // Reemplaza con la IP de tu ESP32
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            document.getElementById('accel').innerText = `Accelerometer: X=${data.accel_x}, Y=${data.accel_y}, Z=${data.accel_z}`;
+            document.getElementById('gyro').innerText = `Gyroscope: X=${data.gyro_x}, Y=${data.gyro_y}, Z=${data.gyro_z}`;
+            document.getElementById('time').innerHTML = `Time: ${data.time}`
+            document.getElementById('temp').innerHTML = `Temperature: ${data.temp} °C`
+        };
+
+        ws.onerror = function(event) {
+            console.error('WebSocket error observed:', event);
+        };
+    </script>
+</body>
+</html>

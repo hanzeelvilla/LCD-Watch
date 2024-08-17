@@ -6,6 +6,7 @@
 #include <WiFiMulti.h>
 #include <ESPAsyncWebServer.h>
 #include "config.h"
+#include "LittleFS.h"
 
 #define SENSOR_SDA  6
 #define SENSOR_SCL  7
@@ -35,6 +36,8 @@ void sendSensorData() {
             jsonDoc["gyro_x"] = gyr.x;
             jsonDoc["gyro_y"] = gyr.y;
             jsonDoc["gyro_z"] = gyr.z;
+            jsonDoc["time"] = qmi.getTimestamp();
+            jsonDoc["temp"] = qmi.getTemperature_C();
             
             String jsonString;
             serializeJson(jsonDoc, jsonString);
@@ -76,6 +79,11 @@ void setup() {
     Serial.println(WiFi.localIP());
   }
 
+  if(!LittleFS.begin(true)){
+    Serial.println("An Error has occurred while mounting LittleFS");
+    return;
+  }
+
   // Inicializar sensor IMU
   if (!qmi.begin(Wire, QMI8658_L_SLAVE_ADDRESS, SENSOR_SDA, SENSOR_SCL)) {
     Serial.println("Failed to find QMI8658 - check your wiring!");
@@ -99,38 +107,9 @@ void setup() {
 
   // Definir una ruta para obtener los datos del IMU
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String data = R"rawliteral(
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>IMU Data</title>
-</head>
-<body>
-    <h1>IMU Data</h1>
-    <p id='accel'>Accelerometer: Loading...</p>
-    <p id='gyro'>Gyroscope: Loading...</p>
-
-    <script>
-        const ws = new WebSocket('ws://192.168.1.93/ws'); // Reemplaza con la IP de tu ESP32
-
-        ws.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            document.getElementById('accel').innerText = `Accelerometer: X=${data.accel_x}, Y=${data.accel_y}, Z=${data.accel_z}`;
-            document.getElementById('gyro').innerText = `Gyroscope: X=${data.gyro_x}, Y=${data.gyro_y}, Z=${data.gyro_z}`;
-        };
-
-        ws.onerror = function(event) {
-            console.error('WebSocket error observed:', event);
-        };
-    </script>
-</body>
-</html>
-)rawliteral";;
 
     // Enviar la respuesta con los datos del sensor
-    request->send(200, "text/html", data);
+    request->send(LittleFS, "/index.html", "text/html");
   });
 
 
