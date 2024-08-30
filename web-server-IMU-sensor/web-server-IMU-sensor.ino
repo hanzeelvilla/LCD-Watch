@@ -13,7 +13,6 @@
 
 #define SENSOR_SDA  6
 #define SENSOR_SCL  7
-#define API_KEY "AIzaSyC6FzLGUEaX51nrIdpHvBBMDYDS0RFLtVs"
 #define DATABASE_URL "https://abuelometro-database-default-rtdb.firebaseio.com/"
 
 WiFiClientSecure ssl;
