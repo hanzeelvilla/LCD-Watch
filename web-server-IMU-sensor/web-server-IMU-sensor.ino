@@ -1,3 +1,5 @@
+#include <Config.h>
+#include <FirebaseClient.h>
 #include <Arduino.h>
 #include <Wire.h>
 #include <ArduinoJson.h>
@@ -7,9 +9,21 @@
 #include <ESPAsyncWebServer.h>
 #include "config.h"
 #include "LittleFS.h"
+#include <WiFiClientSecure.h>
 
 #define SENSOR_SDA  6
 #define SENSOR_SCL  7
+#define API_KEY "AIzaSyC6FzLGUEaX51nrIdpHvBBMDYDS0RFLtVs"
+#define DATABASE_URL "https://abuelometro-database-default-rtdb.firebaseio.com/"
+
+WiFiClientSecure ssl;
+DefaultNetwork network;
+AsyncClientClass client(ssl, getNetwork(network));
+
+FirebaseApp app;
+RealtimeDatabase Database;
+AsyncResult result;
+NoAuth noAuth;
 
 SensorQMI8658 qmi;
 IMUdata acc, gyr;
@@ -27,24 +41,55 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
 }
 
 void sendSensorData() {
-    if (qmi.getDataReady()) {
-        if (qmi.getAccelerometer(acc.x, acc.y, acc.z) && qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) {
-            StaticJsonDocument<200> jsonDoc;
-            jsonDoc["accel_x"] = acc.x;
-            jsonDoc["accel_y"] = acc.y;
-            jsonDoc["accel_z"] = acc.z;
-            jsonDoc["gyro_x"] = gyr.x;
-            jsonDoc["gyro_y"] = gyr.y;
-            jsonDoc["gyro_z"] = gyr.z;
-            jsonDoc["time"] = qmi.getTimestamp();
-            jsonDoc["temp"] = qmi.getTemperature_C();
-            
-            String jsonString;
-            serializeJson(jsonDoc, jsonString);
-            ws.textAll(jsonString);
-        }
+  if (qmi.getDataReady()) {
+    if (qmi.getAccelerometer(acc.x, acc.y, acc.z) && qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) {
+      StaticJsonDocument<200> jsonDoc;
+      jsonDoc["accel_x"] = acc.x;
+      jsonDoc["accel_y"] = acc.y;
+      jsonDoc["accel_z"] = acc.z;
+      jsonDoc["gyro_x"] = gyr.x;
+      jsonDoc["gyro_y"] = gyr.y;
+      jsonDoc["gyro_z"] = gyr.z;
+      jsonDoc["time"] = qmi.getTimestamp();
+      jsonDoc["temp"] = qmi.getTemperature_C();
+      
+      String jsonString;
+      serializeJson(jsonDoc, jsonString);
+      ws.textAll(jsonString);
     }
+  }
+
 }
+
+void sendDataToDB() {
+  if (qmi.getDataReady()) {
+    if (qmi.getAccelerometer(acc.x, acc.y, acc.z) && qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) {
+
+      char jsonBuffer[512];
+
+      snprintf(jsonBuffer, sizeof(jsonBuffer),
+        "{\"sensorData\": {"
+          "\"gyroscope\": {\"x\":%.5f, \"y\":%.5f, \"z\":%.5f},"
+          "\"accelerometer\": {\"x\":%.5f, \"y\":%.5f, \"z\":%.5f},"
+          "\"temperature\":%.2f,"
+          "\"timestamp\":%lu"
+        "}}",
+        gyr.x, gyr.y, gyr.z,
+        acc.x, acc.y, acc.z,
+        qmi.getTemperature_C(),
+        qmi.getTimestamp());
+
+      Serial.print("Set JSON... ");
+      bool status = Database.set<object_t>(client, "/data", object_t(jsonBuffer));
+      if (status)
+        Serial.println("ok");
+      else
+        printError(client.lastError().code(), client.lastError().message());
+    }
+  } else {
+    Serial.println("Failed getting data");
+  }
+};
 
 // Tiempo para conectarse a un access point
 const uint32_t connectTimeoutMs = 10000;
@@ -65,6 +110,11 @@ void notFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
 
+void printError(int code, const String &msg)
+{
+    Firebase.printf("Error, msg: %s, code: %d\n", msg.c_str(), code);
+}
+
 void setup() {
   Serial.begin(115200);
   
@@ -78,6 +128,21 @@ void setup() {
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
   }
+
+  Firebase.printf("Firebase Client v%s\n", FIREBASE_CLIENT_VERSION);
+
+  ssl.setInsecure();
+
+  initializeApp(client, app, getAuth(noAuth));
+
+  // Binding the authentication handler with your Database class object.
+  app.getApp<RealtimeDatabase>(Database);
+
+  // Set your database URL
+  Database.url(DATABASE_URL);
+
+  // In sync functions, we have to set the operating result for the client that works with the function.
+  client.setAsyncResult(result);
 
   if(!LittleFS.begin(true)){
     Serial.println("An Error has occurred while mounting LittleFS");
@@ -123,5 +188,6 @@ void loop() {
   hayWifi();
   sendSensorData(); // Enviar datos en tiempo real
   ws.cleanupClients(); // Limpia clientes inactivos
+  sendDataToDB();
   delay(1000);
 }
