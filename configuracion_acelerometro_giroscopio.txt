@@ -1,0 +1,117 @@
+Configuración del Acelerómetro
+	El método configAccelerometer puede configurarse con los siguientes parámetros:
+
+---Rango del Acelerómetro (ACC_RANGE):
+
+1.- SensorQMI8658::ACC_RANGE_2G: ±2G
+	*Utilizado para detectar pequeñas aceleraciones con alta precisión.
+	*Ideal para aplicaciones que requieren detección de movimientos suaves.
+
+2.- SensorQMI8658::ACC_RANGE_4G: ±4G
+	*Un equilibrio entre sensibilidad y rango de medida.
+
+3.- SensorQMI8658::ACC_RANGE_8G: ±8G
+	*Adecuado para aplicaciones con movimientos más bruscos.
+
+4.- SensorQMI8658::ACC_RANGE_16G: ±16G
+	*Utilizado para detectar aceleraciones muy altas, 
+	 como en aplicaciones industriales o de deportes extremos.
+
+---Tasa de Datos de Salida del Acelerómetro (ACC_ODR):
+
+1.- SensorQMI8658::ACC_ODR_1000Hz: 1000 Hz
+	*Frecuencia alta, útil para capturar movimientos rápidos.
+
+2.- SensorQMI8658::ACC_ODR_500Hz: 500 Hz
+3.- SensorQMI8658::ACC_ODR_250Hz: 250 Hz
+	*Frecuencia moderada, adecuada para la mayoría de las 
+         aplicaciones comunes.
+
+4.- SensorQMI8658::ACC_ODR_125Hz: 125 Hz
+5.- SensorQMI8658::ACC_ODR_62_5Hz: 62.5 Hz
+6.- SensorQMI8658::ACC_ODR_31_25Hz: 31.25 Hz
+	*Frecuencia más baja, útil para aplicaciones de bajo consumo.
+
+7.- SensorQMI8658::ACC_ODR_LOWPOWER_128Hz: 128 Hz (modo bajo consumo)
+8.- SensorQMI8658::ACC_ODR_LOWPOWER_21Hz: 21 Hz (modo bajo consumo)
+9.- SensorQMI8658::ACC_ODR_LOWPOWER_11Hz: 11 Hz (modo bajo consumo)
+10.- SensorQMI8658::ACC_ODR_LOWPOWER_3Hz: 3 Hz (modo bajo consumo)
+	*Modos de bajo consumo, útiles para aplicaciones donde la 
+	 duración de la batería es crucial.
+
+---Modo del Filtro de Paso Bajo (LPF_MODE):
+
+1.- SensorQMI8658::LPF_MODE_0: 2.66% del ODR
+2.- SensorQMI8658::LPF_MODE_1: 3.63% del ODR
+3.- SensorQMI8658::LPF_MODE_2: 5.39% del ODR
+4.- SensorQMI8658::LPF_MODE_3: 13.37% del ODR
+	*Estos modos ajustan la frecuencia de corte del filtro de paso bajo, 
+	 que afecta la suavidad de las lecturas. Los modos más bajos permiten 
+	 pasar menos ruido a expensas de una respuesta más lenta.
+
+---Auto-Test del Acelerómetro:
+
+1.- true: Habilitar auto-test
+	*Utilizado para verificar que el sensor funciona correctamente.
+
+2.- false: Deshabilitar auto-test
+	*Auto-test deshabilitado para operación normal.
+
+Configuración del Giroscopio
+El método configGyroscope puede configurarse con los siguientes parámetros:
+
+---Rango del Giroscopio (GYR_RANGE):
+
+1.- SensorQMI8658::GYR_RANGE_16DPS: ±16 grados por segundo
+	*Para detectar movimientos angulares muy suaves.
+
+2.- SensorQMI8658::GYR_RANGE_32DPS: ±32 grados por segundo
+3.- SensorQMI8658::GYR_RANGE_64DPS: ±64 grados por segundo
+	*Balance entre sensibilidad y capacidad de detección de movimientos rápidos.
+
+4.- SensorQMI8658::GYR_RANGE_128DPS: ±128 grados por segundo
+5.- SensorQMI8658::GYR_RANGE_256DPS: ±256 grados por segundo
+	*Adecuado para movimientos más rápidos y bruscos.
+
+6.- SensorQMI8658::GYR_RANGE_512DPS: ±512 grados por segundo
+7.- SensorQMI8658::GYR_RANGE_1024DPS: ±1024 grados por segundo
+	*Utilizado para detectar giros muy rápidos, como en 
+	 aplicaciones industriales o deportivas.
+
+---Tasa de Datos de Salida del Giroscopio (GYR_ODR):
+
+1.- SensorQMI8658::GYR_ODR_7174_4Hz: 7174.4 Hz
+	*Frecuencia muy alta, útil para capturar movimientos 
+	 extremadamente rápidos.
+
+2.- SensorQMI8658::GYR_ODR_3587_2Hz: 3587.2 Hz
+3.- SensorQMI8658::GYR_ODR_1793_6Hz: 1793.6 Hz
+4.- SensorQMI8658::GYR_ODR_896_8Hz: 896.8 Hz
+	*Alta frecuencia para aplicaciones donde se necesita 
+	 alta precisión en la detección de giros rápidos.
+
+5.- SensorQMI8658::GYR_ODR_448_4Hz: 448.4 Hz
+6.- SensorQMI8658::GYR_ODR_224_2Hz: 224.2 Hz
+7.- SensorQMI8658::GYR_ODR_112_1Hz: 112.1 Hz
+	*Frecuencia moderada para la mayoría de las aplicaciones.
+
+8.- SensorQMI8658::GYR_ODR_56_05Hz: 56.05 Hz
+S9.- ensorQMI8658::GYR_ODR_28_025Hz: 28.025 Hz
+	*Frecuencia más baja para aplicaciones de bajo consumo.
+
+---Modo del Filtro de Paso Bajo (LPF_MODE):
+
+1.- SensorQMI8658::LPF_MODE_0: 2.66% del ODR
+2.- SensorQMI8658::LPF_MODE_1: 3.63% del ODR
+3.- SensorQMI8658::LPF_MODE_2: 5.39% del ODR
+4.- SensorQMI8658::LPF_MODE_3: 13.37% del ODR
+	*Ajusta la frecuencia de corte del filtro de paso bajo, 
+	 afectando la suavidad de las lecturas del giroscopio.
+
+---Auto-Test del Giroscopio:
+
+1.- true: Habilitar auto-test
+	*Verifica el correcto funcionamiento del giroscopio.
+
+2.- false: Deshabilitar auto-test
+	*Auto-test deshabilitado para operación normal.
