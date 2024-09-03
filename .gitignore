@@ -1,2 +1,6 @@
 config.h
+<<<<<<< HEAD
 .git/
+=======
+.gitignore
+>>>>>>> c168e19b82426cc3131e3f6d6cf58da044605b1e
