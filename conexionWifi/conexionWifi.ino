@@ -1,11 +1,11 @@
 #include <WiFi.h>
 #include <WiFiMulti.h>
-#include "./config.h"
+#include "config.h"
 
 WiFiMulti wifiMulti;
 
 // Tiempo para conectarse a un access point
-const uint32_t connectTimeoutMs = 10000;
+const uint32_t connectTimeoutMs = 5000;
 
 void hayWifi() {
   // Verificar que siga conectado a internet, con las redes de la lista
@@ -22,8 +22,8 @@ void hayWifi() {
 void setup() {
   Serial.begin(115200);
 
-  wifiMulti.addAP("SSID1, PSWD1");
-  wifiMulti.addAP("SSID2, PSWD2");
+  wifiMulti.addAP(SSID1, PSWD1);
+  wifiMulti.addAP(SSID2, PSWD2);
 
   Serial.println("Connecting Wifi...");
   Serial.println(WiFi.macAddress());
