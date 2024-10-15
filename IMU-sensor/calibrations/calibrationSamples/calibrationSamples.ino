@@ -96,6 +96,7 @@ void calibrateGyroBias() {
   float sumX = 0, sumY = 0, sumZ = 0;
   int samples = 100;  // Número de muestras para promediar el sesgo
 
+  // bias -> error
   Serial.println("Calibrating gyroscope bias...");
 
   for (int i = 0; i < samples; i++) {

@@ -16,6 +16,8 @@ void setup() {
   preferences.putInt("age", 20);
   
   Serial.println(preferences.getString("name", "Unknown"));
+  Serial.println(preferences.getInt("age", -1));
+  preferences.end();
 }
 
 void loop() {
