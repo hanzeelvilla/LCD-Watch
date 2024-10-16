@@ -12,7 +12,6 @@ float gyroBiasZ = 0;
 Preferences preferences;
 
 void setupIMU() {
-  Serial.begin(115200);
   while (!Serial);
   delay(3000);
 
@@ -50,18 +49,20 @@ void setupIMU() {
   calibrateGyroBias();
 
   Serial.println("Saving new configuration");
+
   // guardar en la ESP la configuración
   preferences.begin(IMU_CONF_NAME, false); //false -> read/write
   preferences.clear();
   Serial.println("Previous configuration cleared");
 
    /*
-  gX_gain: int,
-  gY_gain: int,
-  gZ_gain: int,
-  gyroBiasX: float,
-  gyroBiasY: float,
-  gyroBiasZ: float,
+    LLAVE, VALOR
+    gX_gain: int,
+    gY_gain: int,
+    gZ_gain: int,
+    gyroBiasX: float,
+    gyroBiasY: float,
+    gyroBiasZ: float,
   */
 
   preferences.putInt("gX_gain", gX_gain);
