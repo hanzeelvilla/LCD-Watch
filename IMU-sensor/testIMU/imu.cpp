@@ -1,3 +1,4 @@
+/*
 #include "ImuCalibration.h"
 
 SensorQMI8658 qmi;
@@ -55,7 +56,7 @@ void setupIMU() {
   preferences.clear();
   Serial.println("Previous configuration cleared");
 
-   /*
+    /*
     LLAVE, VALOR
     gX_gain: int,
     gY_gain: int,
@@ -63,7 +64,7 @@ void setupIMU() {
     gyroBiasX: float,
     gyroBiasY: float,
     gyroBiasZ: float,
-  */
+    /*
 
   preferences.putInt("gX_gain", gX_gain);
   preferences.putInt("gY_gain", gY_gain);
@@ -137,3 +138,4 @@ void readIMU() {
   }
   delay(1000);
 }
+*/
