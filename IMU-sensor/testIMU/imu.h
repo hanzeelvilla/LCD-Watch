@@ -86,14 +86,15 @@ class Imu {
     Preferences preferences; // Para guardar los valores en la ESP32
     IMUdata acc;
     IMUdata gyr;
+    // Variables calibración automática interna 
+    uint16_t gX_gain = 0; 
+    uint16_t gY_gain = 0; 
+    uint16_t gZ_gain = 0;
     // Variables para el sesgo del giroscopio
     float gyroBiasX = 0;
     float gyroBiasY = 0;
     float gyroBiasZ = 0;
-    // Calibración automática interna (mantener el sensor quieto durante la calibración)
-    uint16_t gX_gain = 0; 
-    uint16_t gY_gain = 0; 
-    uint16_t gZ_gain = 0;
+    void calibrateGyroBias();
 };
 
 #endif

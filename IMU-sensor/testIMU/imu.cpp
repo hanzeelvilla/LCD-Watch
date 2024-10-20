@@ -14,6 +14,66 @@ void Imu::init() {
     Serial.println("QMI8658 Initialized");
 }
 
+void Imu::setup(
+    bool calibrate,
+    AccelRange accelRange, 
+    AccelODR accelOdr, 
+    LpfMode accelLpfOdr,
+    GyroRange gyroRange, 
+    GyroODR gyroOdr, 
+    LpfMode gyroLpfOdr
+  ){
+
+    if(calibrate) {
+      // calibración automática interna (mantén el sensor quieto durante la calibración)
+      uint16_t gX_gain = 0, gY_gain = 0, gZ_gain = 0;
+
+      if (!qmi.calibration(&gX_gain, &gY_gain, &gZ_gain))
+        Serial.println("Calibration failed");
+      else {
+        Serial.println("All calibrations completed");
+        Serial.print("X gain: "); Serial.println(gX_gain);
+        Serial.print("Y gain: "); Serial.println(gY_gain);
+        Serial.print("Z gain: "); Serial.println(gZ_gain);
+      }
+
+      // guardar los valores de calibración TEMPORALMENTE
+      qmi.writeCalibration(gX_gain, gY_gain, gZ_gain);
+
+      // configuración del giroscopio y acelerómetro
+      qmi.configAccelerometer(accelRange, accelOdr, accelLpfOdr);
+      qmi.configGyroscope(gyroRange, gyroOdr, gyroLpfOdr);
+      qmi.enableGyroscope();
+      qmi.enableAccelerometer();
+    }
+}
+
+void Imu::calibrateGyroBias() {
+  float sumX = 0, sumY = 0, sumZ = 0;
+  int samples = 100;
+  
+  Serial.println("Calibrating gyroscope bias...");
+
+  for (int i = 0; i < samples; i++) {
+    if (qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) {
+      sumX += gyr.x;
+      sumY += gyr.y;
+      sumZ += gyr.z;
+    }
+    delay(10); // pequeño retardo entre las muestras
+  }
+
+  // calcular el promedio
+  gyroBiasX = sumX / samples;
+  gyroBiasY = sumY / samples;
+  gyroBiasZ = sumZ / samples;
+
+  Serial.println("Gyro bias calibration complete:");
+  Serial.print("Bias X: "); Serial.println(gyroBiasX);
+  Serial.print("Bias Y: "); Serial.println(gyroBiasY);
+  Serial.print("Bias Z: "); Serial.println(gyroBiasZ);
+}
+
 /*
   // calibración automática interna (mantén el sensor quieto durante la calibración)
   uint16_t gX_gain = 0, gY_gain = 0, gZ_gain = 0;
