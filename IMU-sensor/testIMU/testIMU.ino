@@ -1,12 +1,11 @@
 #include "imu.h"
 
-//IMU imu;
+Imu imu;
 
 void setup() {
   Serial.begin(115200);
-
-  /*
   imu.init();
+  /*
   setupIMU();
   */
 

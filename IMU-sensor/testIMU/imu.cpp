@@ -1,18 +1,6 @@
-/*
-#include "ImuCalibration.h"
+#include "imu.h"
 
-SensorQMI8658 qmi;
-IMUdata acc;
-IMUdata gyr;
-
-// variables para el sesgo del giroscopio
-float gyroBiasX = 0;
-float gyroBiasY = 0;
-float gyroBiasZ = 0;
-
-Preferences preferences;
-
-void setupIMU() {
+void Imu::init() {
   while (!Serial);
   delay(3000);
 
@@ -24,7 +12,9 @@ void setupIMU() {
   } 
   else
     Serial.println("QMI8658 Initialized");
+}
 
+/*
   // calibración automática interna (mantén el sensor quieto durante la calibración)
   uint16_t gX_gain = 0, gY_gain = 0, gZ_gain = 0;
 
@@ -56,7 +46,6 @@ void setupIMU() {
   preferences.clear();
   Serial.println("Previous configuration cleared");
 
-    /*
     LLAVE, VALOR
     gX_gain: int,
     gY_gain: int,
@@ -64,8 +53,7 @@ void setupIMU() {
     gyroBiasX: float,
     gyroBiasY: float,
     gyroBiasZ: float,
-    /*
-
+    
   preferences.putInt("gX_gain", gX_gain);
   preferences.putInt("gY_gain", gY_gain);
   preferences.putInt("gZ_gain", gZ_gain);
@@ -137,5 +125,4 @@ void readIMU() {
     }
   }
   delay(1000);
-}
 */
