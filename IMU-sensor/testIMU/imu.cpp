@@ -93,27 +93,28 @@ void Imu::setup(bool calibrate){
 }
 
 
-/*
-void readIMU() {
+IMUdata Imu::getGyr() {
   if (qmi.getDataReady()) {
-    if (qmi.getAccelerometer(acc.x, acc.y, acc.z)) {
-      Serial.print("ACCEL.x:");
-      Serial.print(acc.x);
-      Serial.print(",ACCEL.y:");
-      Serial.print(acc.y);
-      Serial.print(",ACCEL.z:");
-      Serial.print(acc.z);
-      Serial.println("");
-    }
     if (qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) {
-      Serial.print("GYRO.x:");
-      Serial.print(gyr.x);
-      Serial.print(",GYRO.y:");
-      Serial.print(gyr.y);
-      Serial.print(",GYRO.z:");
-      Serial.print(gyr.z);
-      Serial.println("");
+      return gyr;
     }
   }
-  delay(1000);
-*/
+  else {
+    Serial.println(" --------> Error reading Gyr DATA <-------- ");
+    Serial.println(" --------> Trying again in 1 sec <--------"); 
+    return error;
+  }
+}
+
+IMUdata Imu::getAcc() {
+  if (qmi.getDataReady()) {
+    if (qmi.getAccelerometer(acc.x, acc.y, acc.z)) {
+      return acc;
+    }
+  }
+  else {
+    Serial.println(" --------> Error reading Acc DATA <-------- ");
+    Serial.println(" --------> Trying again in 1 sec <--------"); 
+    return error;
+  }
+}

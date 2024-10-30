@@ -18,7 +18,7 @@ class Imu {
   public:
     void init();
     void setup(bool calibrate = false); // No calibrar por default);
-    IMUdata getGyro();
+    IMUdata getGyr();
     IMUdata getAcc();
 
   private:
@@ -26,6 +26,7 @@ class Imu {
     Preferences preferences; // Para guardar los valores en la ESP32
     IMUdata acc;
     IMUdata gyr;
+    IMUdata error = {NAN, NAN, NAN};
   };
 
 #endif
