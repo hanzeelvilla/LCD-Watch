@@ -1,6 +1,8 @@
 #include <Wire.h>
+#include <WiFiMulti.h>
 #include <SPI.h>
 #include "SensorQMI8658.hpp"
+#include "config.h"
 
 // Pines del IMU
 #define SENSOR_SDA  6
@@ -10,6 +12,8 @@ SensorQMI8658 qmi;
 
 IMUdata acc;
 IMUdata gyr;
+
+WiFiMulti wifiMulti;
 
 void setup() {
   Serial.begin(115200);
@@ -27,9 +31,23 @@ void setup() {
   qmi.configGyroscope(SensorQMI8658::GYR_RANGE_64DPS, SensorQMI8658::GYR_ODR_896_8Hz, SensorQMI8658::LPF_MODE_3); // Buscar como pasar esta configuracion por parametros
   qmi.enableGyroscope();
   qmi.enableAccelerometer();
+  Serial.println("IMU configurado");
+
+  // INTERNET
+  wifiMulti.addAP(SSID1, PSWD1);
+  wifiMulti.addAP(SSID2, PSWD2);
 }
 
 void loop() {
+  if (wifiMulti.run(connectTimeoutMs) == WL_CONNECTED) {
+    Serial.print("WiFi conectado: ");
+    Serial.print(WiFi.SSID());
+    Serial.print(" ");
+    Serial.println(WiFi.localIP());
+  } 
+  else
+    Serial.println("WiFi desconectado");
+
   if (qmi.getDataReady()) {
     if (qmi.getAccelerometer(acc.x, acc.y, acc.z)) {
       Serial.print("ACCEL.x:"); Serial.print(acc.x); Serial.print(",");
