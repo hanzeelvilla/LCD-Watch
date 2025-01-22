@@ -2,6 +2,8 @@
 #include <WiFiMulti.h>
 #include <SPI.h>
 #include "SensorQMI8658.hpp"
+#include <ArduinoJson.h>
+#include <PubSubClient.h>
 #include "config.h"
 
 // Pines del IMU
@@ -14,6 +16,15 @@ IMUdata acc;
 IMUdata gyr;
 
 WiFiMulti wifiMulti;
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+JsonDocument doc;
+
+//FUNCIONES
+bool wifiConnected();
+void initWifi();
+void reconnect();
 
 void setup() {
   Serial.begin(115200);
@@ -33,38 +44,103 @@ void setup() {
   qmi.enableAccelerometer();
   Serial.println("IMU configurado");
 
-  // INTERNET
-  wifiMulti.addAP(SSID1, PSWD1);
-  wifiMulti.addAP(SSID2, PSWD2);
+  initWifi();
+  client.setServer(BROKER, PORT);
 }
 
 void loop() {
-  if (wifiMulti.run(connectTimeoutMs) == WL_CONNECTED) {
-    Serial.print("WiFi conectado: ");
-    Serial.print(WiFi.SSID());
-    Serial.print(" ");
-    Serial.println(WiFi.localIP());
-  } 
-  else
-    Serial.println("WiFi desconectado");
-
   if (qmi.getDataReady()) {
     if (qmi.getAccelerometer(acc.x, acc.y, acc.z)) {
       Serial.print("ACCEL.x:"); Serial.print(acc.x); Serial.print(",");
       Serial.print("ACCEL.y:"); Serial.print(acc.y); Serial.print(",");
       Serial.print("ACCEL.z:"); Serial.print(acc.z); Serial.println();
+
+      doc["acc"]["x"] = acc.x;
+      doc["acc"]["y"] = acc.y;
+      doc["acc"]["z"] = acc.z;
     }
 
     if (qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) {  
       Serial.print("GYRO.x:"); Serial.print(gyr.x); Serial.print(",");
       Serial.print("GYRO.y:"); Serial.print(gyr.y); Serial.print(",");
       Serial.print("GYRO.z:"); Serial.print(gyr.z); Serial.println();
+
+      doc["gyr"]["x"] = acc.x;
+      doc["gyr"]["y"] = acc.y;
+      doc["gyr"]["z"] = acc.z;
     }
 
     Serial.print("Temperature:");
     Serial.print(qmi.getTemperature_C());
     Serial.println(" degrees C");
+    Serial.println(qmi.getTimestamp());
+
+    doc["temp"] = qmi.getTemperature_C();
+    doc["time"] = qmi.getTimestamp();
   }
-    
+
+  if (wifiConnected()) {
+    char jsonBuffer[200];
+    serializeJson(doc, jsonBuffer);
+
+    if (client.publish(TX_TOPIC, jsonBuffer)) {
+        Serial.println("Publishing message...");
+        Serial.println(jsonBuffer);
+      }
+      else 
+        Serial.println("Failed to publish message.");
+  }
+  else
+    Serial.println("Sin internet");
+  
+  reconnect();
   delay(1000);
+}
+
+bool wifiConnected() {
+  return wifiMulti.run() == WL_CONNECTED;
+}
+
+void initWifi() {
+  WiFi.mode(WIFI_STA);
+  wifiMulti.addAP(SSID1, PSWD1);
+  wifiMulti.addAP(SSID2, PSWD2); 
+
+  Serial.println("Connecting to WiFi...");
+
+  while (!wifiConnected()) {
+    Serial.print(".");
+    delay(500);
+  }
+
+  Serial.println("\nWiFi connected");
+  Serial.println("SSID: " + WiFi.SSID());
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void reconnect() {
+  if (!client.connected()) {
+    while (!client.connected()) {
+      Serial.print("Attempting MQTT connection...");
+
+      if (client.connect(MQTT_CLIENT)) { // change the client ID to something unique
+        Serial.print(" Connected to: ");
+        Serial.print("test.mosquitto.org");
+        /*
+        client.subscribe(RX_TOPIC);
+        Serial.print(" Subscribed to: ");
+        Serial.println(RX_TOPIC);
+        */
+      } 
+      else {
+        Serial.print(" failed, rc= ");
+        Serial.print(client.state());
+        Serial.println(" try again in 5 seconds");
+        delay(5000);
+      }
+    }
+  }
+
+  client.loop();
 }
