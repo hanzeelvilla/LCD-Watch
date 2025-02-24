@@ -4,6 +4,7 @@
 #include "SensorQMI8658.hpp"
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
+#include <NTPClient.h>
 #include "config.h"
 
 // Pines del IMU
@@ -20,6 +21,9 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 JsonDocument doc;
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
 
 //FUNCIONES
 bool wifiConnected();
@@ -46,9 +50,13 @@ void setup() {
 
   initWifi();
   client.setServer(BROKER, PORT);
+  timeClient.begin();
+  timeClient.setTimeOffset(GMT_6);
 }
 
 void loop() {
+  timeClient.update();
+
   if (qmi.getDataReady()) {
     if (qmi.getAccelerometer(acc.x, acc.y, acc.z)) {
       Serial.print("ACCEL.x:"); Serial.print(acc.x); Serial.print(",");
@@ -70,13 +78,26 @@ void loop() {
       doc["gyr"]["z"] = acc.z;
     }
 
+    JsonArray config = doc.createNestedArray("config");
+    
+    JsonObject accConfig = config.createNestedObject();
+    accConfig["range"] = 4;
+    accConfig["odr"] = 1000;
+    accConfig["lpf_mode"] = 0;
+
+    JsonObject gyrConfig = config.createNestedObject();
+    gyrConfig["range"] = 64;
+    gyrConfig["odr"] = 896.8;
+    gyrConfig["lpf_mode"] = 3;
+
     Serial.print("Temperature:");
     Serial.print(qmi.getTemperature_C());
     Serial.println(" degrees C");
     Serial.println(qmi.getTimestamp());
 
+    doc["time"] = timeClient.getFormattedTime();
     doc["temp"] = qmi.getTemperature_C();
-    doc["time"] = qmi.getTimestamp();
+
   }
 
   if (wifiConnected()) {

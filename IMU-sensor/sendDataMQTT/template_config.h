@@ -13,4 +13,6 @@
 #define TX_TOPIC "/TX_TOPIC"
 #define MQTT_CLIENT "Client_test"
 
+#define GMT_6 -21600 
+
 #endif
