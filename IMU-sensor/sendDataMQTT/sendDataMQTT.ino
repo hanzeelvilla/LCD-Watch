@@ -66,9 +66,9 @@ void loop() {
       Serial.print("GYRO.y:"); Serial.print(gyr.y); Serial.print(",");
       Serial.print("GYRO.z:"); Serial.print(gyr.z); Serial.println();
 
-      doc["gyr"]["x"] = acc.x;
-      doc["gyr"]["y"] = acc.y;
-      doc["gyr"]["z"] = acc.z;
+      doc["gyr"]["x"] = gyr.x;
+      doc["gyr"]["y"] = gyr.y;
+      doc["gyr"]["z"] = gyr.z;
     }
 
     JsonArray config = doc.createNestedArray("config");
