@@ -1,10 +1,3 @@
-#include <Wire.h>
-#include <WiFiMulti.h>
-#include <SPI.h>
-#include "SensorQMI8658.hpp"
-#include <ArduinoJson.h>
-#include <PubSubClient.h>
-#include <NTPClient.h>
 #include "config.h"
 
 // Pines del IMU
@@ -101,7 +94,7 @@ void loop() {
   }
 
   if (wifiConnected()) {
-    char jsonBuffer[200];
+    char jsonBuffer[512];
     serializeJson(doc, jsonBuffer);
 
     if (client.publish(TX_TOPIC, jsonBuffer)) {
