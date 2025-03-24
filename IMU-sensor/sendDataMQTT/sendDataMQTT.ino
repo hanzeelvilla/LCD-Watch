@@ -1,4 +1,4 @@
-#include "config.h"
+#include "template_config.h"
 
 // Pines del IMU
 #define SENSOR_SDA  6
