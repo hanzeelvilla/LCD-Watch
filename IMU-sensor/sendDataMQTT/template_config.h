@@ -10,9 +10,9 @@
 #include <PubSubClient.h>
 #include <NTPClient.h>
 
-#define SSID1 "TP-Link_AP_4822"
-#define PSWD1 "93149075"
-#define SSID2 "your_SSID12"
+#define SSID1 "your_SSID1"
+#define PSWD1 "your_PSWD1"
+#define SSID2 "your_SSID2"
 #define PSWD2 "your_PSWD2"
 
 #define BROKER "test.mosquitto.org"
